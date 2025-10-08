@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeThink Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #111;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    /* Ambient Background Gradient */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 20%, rgba(60,60,60,0.6), transparent 40%),
+                  radial-gradient(circle at 80% 30%, rgba(80,80,80,0.6), transparent 40%),
+                  radial-gradient(circle at 50% 80%, rgba(50,50,50,0.6), transparent 40%);
+      animation: moveBackground 20s linear infinite;
+      z-index: -2;
+    }
+    /* Mouse canvas is the only remaining background animation */
+    canvas#mouseCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+    @keyframes moveBackground {
+      0% { transform: translate(0,0); }
+      50% { transform: translate(-50px, 50px); }
+      100% { transform: translate(0,0); }
+    }
+    header {
+      text-align: center;
+      padding: 4rem 2rem 2rem;
+    }
+    header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      margin: 0;
+      color: #00d4ff;
+    }
+    header p {
+      font-size: 1.2rem;
+      color: #dbeafe;
+    }
+    section {
+      padding: 3rem 2rem;
+    }
+    h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #00d4ff;
+      text-align: center;
+    }
+    .about {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #dbeafe;
+    }
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    .project-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #00d4ff;
+    }
+    .project-card p {
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .project-tech {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .project-tech span {
+      background: #00d4ff;
+      color: #0f2027;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+    }
+    .project-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+    }
+    /* === REVIEW SLIDER STYLES === */
+    .review-slider {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .review-track {
+      display: flex;
+      transition: transform 1s ease;
+    }
+    .review-card {
+      min-width: 100%;
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.08);
+      padding: 2.5rem 2rem; /* Increased vertical padding */
+      border-radius: 1rem;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .review-card h3 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: #00d4ff;
+    }
+    .review-card p {
+      margin-top: 0.8rem;
+      color: #dbeafe;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 212, 255, 0.7);
+      border: none;
+      color: #111;
+      padding: 0.8rem;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.3s, opacity 0.3s;
+      font-size: 1rem;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slider-btn:hover {
+      background: #00d4ff;
+    }
+    .prev-btn {
+      left: 10px;
+    }
+    .next-btn {
+      right: 10px;
+    }
+    .review-dots {
+      text-align: center;
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .dot.active {
+      background: #00d4ff;
+    }
+    /* === END REVIEW SLIDER STYLES === */
+
+    .review-form {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .review-form form {
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .review-form input, .review-form textarea {
+      padding: 0.8rem;
+      border-radius: 0.5rem;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+    }
+    .review-form button {
+      padding: 0.8rem;
+      border-radius: 0.5rem;
+      border: none;
+      background: #00d4ff;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #0f2027;
+      transition: background 0.3s;
+    }
+    .review-form button:hover {
+      background: #00aacc;
+    }
+    .contact {
+      text-align: center;
+    }
+    .contact form {
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .contact input, .contact textarea {
+      padding: 0.8rem;
+      border-radius: 0.5rem;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+    }
+    .contact button {
+      padding: 0.8rem;
+      border-radius: 0.5rem;
+      border: none;
+      background: #00d4ff;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #0f2027;
+      transition: background 0.3s;
+    }
+    .contact button:hover {
+      background: #00aacc;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.08);
+      padding: 1.5rem 2rem;
+      border-radius: 1rem;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .stat-box h3 {
+      margin: 0;
+      font-size: 2rem;
+      color: #00d4ff;
+    }
+    .stat-box p {
+      margin: 0.5rem 0 0;
+      color: #dbeafe;
+      font-size: 1rem;
+    }
+    .project-links {
+      margin-top: 1rem;
+    }
+    /* NEW/MODIFIED STYLE for the project links */
+    .project-links a {
+      display: inline-block;
+      background: #00d4ff;
+      color: #0f2027;
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .project-links a:hover {
+      background: #00aacc;
+      text-decoration: none;
+    }
+    /* === YOUTUBE CONTENT STYLES === */
+    .youtube-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    .youtube-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+    .youtube-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+    }
+    .youtube-card a {
+        text-decoration: none;
+        color: inherit;
+    }
+    .video-thumbnail {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-bottom: 2px solid #00d4ff;
+    }
+    .youtube-card .video-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      margin: 1rem 1rem 0.5rem 1rem;
+      color: #00d4ff;
+    }
+    .youtube-card .video-desc {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      padding: 0 1rem;
+      flex-grow: 1; /* Pushes the stats to the bottom */
+    }
+    .video-stats {
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 1rem;
+    }
+    .stat-item {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .stat-item i {
+      color: #00d4ff;
+      margin-right: 0.4rem;
+    }
+    /* === END YOUTUBE CONTENT STYLES === */
+  </style>
+</head>
+<body>
+  <canvas id="mouseCanvas"></canvas>
+  <header>
+    <h1>WeThink Portfolio</h1>
+    <p>Minecraft Server Developer • Plugin Coder • Sysadmin</p>
+  </header>
+
+  <section>
+    <h2>About Me</h2>
+    <div class="about">
+      <p>Hello! I'm WeThink, a passionate Minecraft developer with expertise in plugin coding, server optimization, and system administration. Since 2022, I've worked on multiple high-scale projects, managing thousands of players and creating unique gameplay experiences. I love combining technical expertise with creativity to deliver smooth, enjoyable, and scalable servers.</p>
+    </div>
+    <div class="stats">
+      <div class="stat-box">
+        <h3>10K+</h3>
+        <p>Players Served</p>
+      </div>
+      <div class="stat-box">
+        <h3>300+</h3>
+        <p>Clients with Shyam Studio</p>
+      </div>
+      <div class="stat-box">
+        <h3>4.9/5</h3>
+        <p>Average Rating</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Projects</h2>
+    <div class="projects">
+      <div class="project-card">
+        <h3>Sirius Network</h3>
+        <p>Large-scale Minecraft network designed for smooth performance and optimized gameplay for thousands of players.</p>
+        <div class="project-tech">
+          <span>Java</span><span>PaperMC</span><span>Optimization</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <h3>God Spunky</h3>
+        <p>Custom-coded features with unique gameplay mechanics tailored to player experience and engagement.</p>
+        <div class="project-tech">
+          <span>Plugins</span><span>Custom Features</span><span>Scaling</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <h3>Shyam Studio</h3>
+        <p>A creative project focusing on community interaction, design, and balanced server economy systems.</p>
+        <div class="project-tech">
+          <span>Community</span><span>Design</span><span>Economy</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <h3>Bubble MC</h3>
+        <p>Advanced player-focused optimizations with custom plugins to enhance competitive gameplay.</p>
+        <div class="project-tech">
+          <span>Custom Plugins</span><span>Performance</span><span>Competitive</span>
+        </div>
+      </div>
+      
+      <div class="project-card">
+        <h3>GB NODES</h3>
+        <p>India-based Game, VPS, and Dedicated Server hosting provider. Founded in 2020 and known for affordable, high-performance Ryzen servers with 12Tbps DDoS protection.</p>
+        <div class="project-tech">
+          <span>Game Hosting</span><span>VPS</span><span>Dedicated Servers</span><span>DDoS Protection</span>
+        </div>
+        <div class="project-links">
+          <a href="https://gbnodes.host/" target="_blank">Visit Website</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <h3>Ateex Cloud</h3>
+        <p>A Game Server hosting provider focused on the Minecraft community, widely promoted for offering free 24/7 Minecraft server hosting services to its users.</p>
+        <div class="project-tech">
+          <span>Minecraft</span><span>Free Hosting</span><span>Game Server</span>
+        </div>
+        <div class="project-links">
+          <a href="https://ateex.cloud/" target="_blank">Visit Website</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <h3>GigaNodes</h3>
+        <p>A premier provider of Game Hosting, Dedicated Servers, and Cloud Services, incorporated in 2024. Offers 99.99% Uptime Guarantee and 12Tbps DDoS protection.</p>
+        <div class="project-tech">
+          <span>Game Hosting</span><span>Cloud VPS</span><span>99.99% Uptime</span>
+        </div>
+        <div class="project-links">
+          <a href="http://giganodes.host/" target="_blank">Visit Website</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <h3>VisionHost</h3>
+        <p>Vision Host is redefining India’s gaming cloud with high-performance, AI-powered hosting for games, apps, and cloud services. Founded in 2024, we deliver scalable, secure, and affordable solutions building the future, not just keeping up with it</p>
+        <div class="project-tech">
+          <span>Cloud Solutions</span><span>Security</span><span>Enterprise</span>
+        </div>
+        <div class="project-links">
+          <a href="https://visionhost.cloud/" target="_blank">Visit Website</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <h3>Creepercastle</h3>
+        <p>A specialized hosting company catering primarily to the gaming community, heavily promoted as a source for free 24/7 Minecraft server hosting.</p>
+        <div class="project-tech">
+          <span>Minecraft</span><span>Free Hosting</span><span>Gaming</span>
+        </div>
+        <div class="project-links">
+          <a href="https://www.creepercastle.cloud/" target="_blank">Visit Website</a>
+        </div>
+      </div>
+      </div>
+  </section>
+
+  <section>
+    <h2>Client Reviews</h2>
+    <div class="review-slider">
+      <div class="review-track" id="reviewTrack">
+        <div class="review-card">
+          <h3>LivingLegend - Sirius Network</h3>
+          <p>WeThink and his brother managed Sirius Network with absolute professionalism. Their dedication kept the network stable and fun for players across the world, ensuring a lag-free and enjoyable experience for all of our users.</p>
+        </div>
+        <div class="review-card">
+          <h3>RaviRai - Shyam Studio</h3>
+          <p>Working with WeThink was a seamless experience. His management skills and technical knowledge truly helped us achieve success in record time. He's a reliable professional and a fantastic problem-solver.</p>
+        </div>
+        <div class="review-card">
+          <h3>TeenPlayz - BubbleMC</h3>
+          <p>One of the best developers I’ve met. He delivered custom solutions that transformed our gameplay into something exciting and memorable, exceeding our expectations for server performance.</p>
+        </div>
+        <div class="review-card">
+          <h3>Dimension Thunder</h3>
+          <p>WeThink developed innovative potion systems and complex features that brought new life to our server and kept our community engaged, demonstrating deep knowledge of Spigot development.</p>
+        </div>
+        <div class="review-card">
+          <h3>MrGamerTee - GamerTee Network</h3>
+          <p>He patiently explained server fundamentals and optimized our setup. His guidance saved us time and made our server perform way better than we initially thought possible.</p>
+        </div>
+      </div>
+      <button class="slider-btn prev-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+      <button class="slider-btn next-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="review-dots" id="reviewDots">
+      </div>
+  </section>
+
+  <section>
+    <h2>Our YouTube Content</h2>
+    <p class="about" style="margin-bottom: 4rem;">Explore some of our key projects and content. We focus on providing valuable insights into Minecraft server development and optimization with a global reach.</p>
+    <div class="youtube-grid">
+      <div class="youtube-card">
+        <a href="https://www.youtube.com/watch?v=uYpEGTSOydg" target="_blank">
+          <img src="https://img.youtube.com/vi/uYpEGTSOydg/hqdefault.jpg" alt="GODSPUNKY Network Join Video Thumbnail" class="video-thumbnail">
+        </a>
+        <h3 class="video-title">How to join The GODSPUNKY NETWORK || Minecraft Java + PE Network</h3>
+        <p class="video-desc">Joining details for the multi-platform GODSPUNKY server.</p>
+        <div class="video-stats">
+          <span class="stat-item"><i class="fas fa-eye"></i> 10.5K Views</span>
+          <span class="stat-item"><i class="fas fa-thumbs-up"></i> 520 Likes</span>
+        </div>
+      </div>
+      <div class="youtube-card">
+        <a href="https://www.youtube.com/watch?v=cKabLA2uLJg" target="_blank">
+          <img src="https://img.youtube.com/vi/cKabLA2uLJg/hqdefault.jpg" alt="SkyBattle India Video Thumbnail" class="video-thumbnail">
+        </a>
+        <h3 class="video-title">SkyBattle India (Cracked)</h3>
+        <p class="video-desc">Competitive SkyBattle gameplay on a cracked Indian server.</p>
+        <div class="video-stats">
+          <span class="stat-item"><i class="fas fa-eye"></i> 7.2K Views</span>
+          <span class="stat-item"><i class="fas fa-thumbs-up"></i> 350 Likes</span>
+        </div>
+      </div>
+      <div class="youtube-card">
+        <a href="https://www.youtube.com/watch?v=b8HNl11ZG9A" target="_blank">
+          <img src="https://img.youtube.com/vi/b8HNl11ZG9A/hqdefault.jpg" alt="Dominate SMP Video Thumbnail" class="video-thumbnail">
+        </a>
+        <h3 class="video-title">Dominate Every Smp</h3>
+        <p class="video-desc">Strategies and tips on how to dominate any Survival Multiplayer server.</p>
+        <div class="video-stats">
+          <span class="stat-item"><i class="fas fa-eye"></i> 5.8K Views</span>
+          <span class="stat-item"><i class="fas fa-thumbs-up"></i> 280 Likes</span>
+        </div>
+      </div>
+      <div class="youtube-card">
+        <a href="https://www.youtube.com/watch?v=c3XTRUBVgQM" target="_blank">
+          <img src="https://img.youtube.com/vi/c3XTRUBVgQM/hqdefault.jpg" alt="Rare Potion Collection Video Thumbnail" class="video-thumbnail">
+        </a>
+        <h3 class="video-title">Why I'm Collecting Every RARE POTION In This Minecraft SMP</h3>
+        <p class="video-desc">A collection challenge focused on acquiring every rare potion on a Minecraft SMP.</p>
+        <div class="video-stats">
+          <span class="stat-item"><i class="fas fa-eye"></i> 4.1K Views</span>
+          <span class="stat-item"><i class="fas fa-thumbs-up"></i> 190 Likes</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="contact">
+    <h2>Contact</h2>
+    <form id="contactForm">
+      <input type="text" id="name" placeholder="Your Name" required>
+      <input type="email" id="email" placeholder="Your Email" required>
+      <textarea rows="5" id="message" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  <footer>
+    © 2025 WeThink. All rights reserved.
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('mouseCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+
+    window.addEventListener('mousemove', (e) => {
+      for(let i=0;i<5;i++){
+        particles.push({
+          x: e.clientX,
+          y: e.clientY,
+          size: Math.random()*5+2,
+          alpha: 1,
+          dx: (Math.random()-0.5)*2,
+          dy: (Math.random()-0.5)*2
+        });
+      }
+    });
+
+    function animate(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      for(let i=0;i<particles.length;i++){
+        let p=particles[i];
+        p.x+=p.dx;
+        p.y+=p.dy;
+        p.alpha-=0.02;
+        ctx.fillStyle=`rgba(0,212,255,${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+        ctx.fill();
+      }
+      for(let i=particles.length-1;i>=0;i--){
+        if(particles[i].alpha<=0) particles.splice(i,1);
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+    window.addEventListener('resize',()=>{
+      canvas.width=window.innerWidth;
+      canvas.height=window.innerHeight;
+    });
+
+    // Auto slideshow for reviews
+    let index=0;
+    const track=document.getElementById('reviewTrack');
+    const total=track.children.length;
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const dotsContainer = document.getElementById('reviewDots');
+    let slideshowInterval;
+
+    function updateSlider() {
+      track.style.transform = `translateX(-${index * 100}%)`;
+      document.querySelectorAll('.dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+      });
+    }
+
+    function createDots() {
+      for (let i = 0; i < total; i++) {
+        const dot = document.createElement('span');
+        dot.classList.add('dot');
+        dot.addEventListener('click', () => {
+          index = i;
+          updateSlider();
+          resetSlideshowInterval();
+        });
+        dotsContainer.appendChild(dot);
+      }
+      updateSlider(); // Set initial active dot
+    }
+
+    function nextSlide() {
+      index = (index + 1) % total;
+      updateSlider();
+    }
+
+    function prevSlide() {
+      index = (index - 1 + total) % total;
+      updateSlider();
+    }
+
+    function startSlideshow() {
+      slideshowInterval = setInterval(nextSlide, 5000);
+    }
+
+    function resetSlideshowInterval() {
+      clearInterval(slideshowInterval);
+      startSlideshow();
+    }
+    
+    // Add event listeners for controls
+    nextBtn.addEventListener('click', () => {
+      nextSlide();
+      resetSlideshowInterval();
+    });
+    prevBtn.addEventListener('click', () => {
+      prevSlide();
+      resetSlideshowInterval();
+    });
+
+    createDots();
+    startSlideshow();
+
+
+    // Discord webhook integration for contact
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // NOTE: Discord webhook functionality needs a real endpoint URL. 
+      // This is left as a placeholder for client-side implementation.
+      // A placeholder alert is used here for feedback.
+      alert('Message sent successfully! (Form submission is currently a placeholder.)');
+    });
+
+  </script>
+</body>
+</html>
